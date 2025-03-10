@@ -3,8 +3,8 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
-            <a class="btn btn-sm btn-primary mt-1" href="{{ url('user/create') }}">TAMBAH</a>
+            <h3 class="card-title">{{ $page->title ?? 'Daftar Kategori' }}</h3>
+            <a class="btn btn-sm btn-primary mt-1" href="{{ url('kategori/create') }}">TAMBAH</a>
         </div>
         <div class="card-body">
             @if (session('success'))
@@ -16,22 +16,21 @@
             <div class="row">
                 <label class="col-1 control-label col-form-label">Filter:</label>
                 <div class="col-3">
-                    <select class="form-control" id="level_id" name="level_id" required>
+                    <select class="form-control" id="filter_kategori_id" name="filter_kategori_id">
                         <option value="">- Semua -</option>
-                        @foreach ($level as $item)
-                            <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
+                        @foreach ($kategori as $item)
+                            <option value="{{ $item->kategori_id }}">{{ $item->kategori_nama }}</option>
                         @endforeach
                     </select>
-                    <small class="form-text text-muted">Level Pengguna</small>
+                    <small class="form-text text-muted">Filter Kategori</small>
                 </div>
             </div>
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_kategori">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>USERNAME</th>
-                        <th>NAMA</th>
-                        <th>LEVEL PENGGUNA</th>
+                        <th>No</th>
+                        <th>Kode</th>
+                        <th>Nama</th>
                         <th>AKSI</th>
                     </tr>
                 </thead>
@@ -40,23 +39,18 @@
     </div>
 @endsection
 
-@push('css')
-@endpush
-
 @push('js')
     <script>
         $(document).ready(function () {
-            var dataUser = $('#table_user').DataTable({
+            var dataKategori = $('#table_kategori').DataTable({
+                processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('user/list') }}",
+                    "url": "{{ url('kategori/list') }}",
+                    'type': 'GET',
                     'dataType': 'json',
-                    'type': 'POST',
-                    'headers': {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
                     "data": function (d) {
-                        d.level_id = $('#level_id').val();
+                        d.kategori_id = $('#filter_kategori_id').val();
                     }
                 },
                 columns: [
@@ -66,20 +60,13 @@
                         orderable: false,
                         searchable: false,
                     }, {
-                        data: 'username',
-                        className: "",
+                        data: 'kategori_kode',
                         orderable: true,
                         searchable: true,
                     }, {
-                        data: 'nama',
-                        className: "",
+                        data: 'kategori_nama',
                         orderable: true,
                         searchable: true,
-                    }, {
-                        data: 'level.level_nama',
-                        className: "",
-                        orderable: false,
-                        searchable: false,
                     }, {
                         data: 'aksi',
                         className: "text-center",
@@ -89,8 +76,8 @@
                 ]
             });
 
-            $('#level_id').on('change', function () {
-                dataUser.ajax.reload();
+            $('#filter_kategori_id').on('change', function () {
+                dataKategori.ajax.reload();
             });
         });
     </script>
