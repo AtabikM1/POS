@@ -3,9 +3,9 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Data Level</h3>
+            <h3 class="card-title">Data Supplier</h3>
             <div class="card-tools">
-                <a href="{{ url('/level/create') }}" class="btn btn-primary btn-sm">Tambah Level</a>
+                <a href="{{ url('/supplier/create') }}" class="btn btn-primary btn-sm">Tambah Supplier</a>
             </div>
         </div>
         <div class="card-body">
@@ -13,12 +13,13 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
-            <table class="table table-bordered table-striped" id="tbl-level">
+            <table class="table table-bordered table-striped" id="tbl-supplier">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Kode Level</th>
-                        <th>Nama Level</th>
+                        <th>Kode Supplier</th>
+                        <th>Nama Supplier</th>
+                        <th>Alamat</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -30,11 +31,11 @@
 @push('js')
     <script>
         $(document).ready(function () {
-            $('#tbl-level').DataTable({
+            $('#tbl-supplier').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
-                    url: "{{ url('level/list') }}",
+                    url: "{{ url('supplier/list') }}",
                     type: "POST",
                     data: function (d) {
                         d._token = "{{ csrf_token() }}"
@@ -47,12 +48,16 @@
                     sortable: false
                 },
                 {
-                    data: 'level_kode',
-                    name: 'level_kode'
+                    data: 'supplier_kode',
+                    name: 'supplier_kode'
                 },
                 {
-                    data: 'level_nama',
-                    name: 'level_nama'
+                    data: 'supplier_nama',
+                    name: 'supplier_nama'
+                },
+                {
+                    data: 'supplier_alamat',
+                    name: 'supplier_alamat'
                 },
                 {
                     data: 'action',
