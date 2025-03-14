@@ -10,6 +10,15 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="mb-3">
+                <label for="kategori-filter">Filter Kategori:</label>
+                <select id="kategori-filter" class="form-control">
+                    <option value="">Semua Kategori</option>
+                    @foreach ($kategori as $kat)
+                        <option value="{{ $kat->kategori_id }}">{{ $kat->kategori_nama }}</option>
+                    @endforeach
+                </select>
+            </div>
             <table class="table table-bordered table-striped" id="data-table">
                 <thead>
                     <tr>
@@ -32,14 +41,15 @@
 @push('js')
     <script>
         $(function () {
-            $('#data-table').DataTable({
+            let table = $('#data-table').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
                     url: "{{ url('barang/list') }}",
                     type: "POST",
                     data: function (d) {
-                        d._token = "{{ csrf_token() }}"
+                        d._token = "{{ csrf_token() }}";
+                        d.kategori_id = $('#kategori-filter').val();
                     }
                 },
                 columns: [
@@ -82,6 +92,11 @@
                         sortable: false
                     }
                 ]
+            });
+
+            // Event listener untuk filter kategori
+            $('#kategori-filter').change(function () {
+                table.ajax.reload();
             });
         });
     </script>

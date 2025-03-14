@@ -10,25 +10,36 @@ use Yajra\DataTables\Facades\DataTables;
 class BarangController extends Controller
 {
     public function index()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Daftar Barang',
-            'list' => ['Home', 'Barang']
-        ];
-        
-        $page = (object) [
-            'title' => 'Daftar barang yang terdaftar dalam sistem',
-        ];
-        
-        $activeMenu = 'barang';
-        
-        return view('barang.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
-    }
+{
+    $breadcrumb = (object) [
+        'title' => 'Daftar Barang',
+        'list' => ['Home', 'Barang']
+    ];
     
-    public function list(Request $request)
+    $page = (object) [
+        'title' => 'Daftar barang yang terdaftar dalam sistem',
+    ];
+    
+    $activeMenu = 'barang';
+    $kategori = KategoriModel::all(); // Tambahkan ini
+
+    return view('barang.index', [
+        'breadcrumb' => $breadcrumb,
+        'page' => $page,
+        'activeMenu' => $activeMenu,
+        'kategori' => $kategori // Kirim ke view
+    ]);
+}
+
+    
+     public function list(Request $request)
     {
         $barang = BarangModel::select('barang_id', 'kategori_id', 'barang_kode', 'barang_nama', 'harga_beli', 'harga_jual')
             ->with('kategori');
+        
+        if ($request->has('kategori_id') && $request->kategori_id != '') {
+            $barang->where('kategori_id', $request->kategori_id);
+        }
         
         return DataTables::of($barang)
             ->addIndexColumn()
