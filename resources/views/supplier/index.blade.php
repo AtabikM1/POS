@@ -5,7 +5,8 @@
         <div class="card-header">
             <h3 class="card-title">Data Supplier</h3>
             <div class="card-tools">
-                <a href="{{ url('/supplier/create') }}" class="btn btn-primary btn-sm">Tambah Supplier</a>
+                <button onclick="modalAction('{{ url('/supplier/create_ajax') }}')" class="btn btn-primary btn-sm">Tambah
+                    Supplier</button>
             </div>
         </div>
         <div class="card-body">
@@ -26,10 +27,33 @@
             </table>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('js')
     <script>
+        function modalAction(url) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#modal-content').html(data);
+                    $('#myModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
         $(document).ready(function () {
             $('#tbl-supplier').DataTable({
                 serverSide: true,

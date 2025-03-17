@@ -5,7 +5,8 @@
         <div class="card-header">
             <h3 class="card-title">Data Level</h3>
             <div class="card-tools">
-                <a href="{{ url('/level/create') }}" class="btn btn-primary btn-sm">Tambah Level</a>
+                <button onclick="modalAction('{{ url('/level/create_ajax') }}')" class="btn btn-primary btn-sm">Tambah
+                    Level</button>
             </div>
         </div>
         <div class="card-body">
@@ -23,6 +24,15 @@
                     </tr>
                 </thead>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content">
+
+            </div>
         </div>
     </div>
 @endsection
@@ -57,11 +67,25 @@
                 {
                     data: 'action',
                     name: 'action',
-                    searchable: false,
-                    sortable: false
+                    orderable: false,
+                    searchable: false
                 }
                 ]
             });
         });
+
+        function modalAction(url) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    $('#modal-content').html(data);
+                    $('#myModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
     </script>
 @endpush
