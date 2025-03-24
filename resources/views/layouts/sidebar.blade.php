@@ -1,5 +1,6 @@
+<!-- Sidebar -->
 <div class="sidebar">
-    <!-- Sidebar Search Form -->
+    <!-- SidebarSearch Form -->
     <div class="form-inline mt-2">
         <div class="input-group" data-widget="sidebar-search">
             <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
@@ -20,7 +21,6 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-
             <li class="nav-header">Data Pengguna</li>
             <li class="nav-item">
                 <a href="{{ url('/level') }}" class="nav-link {{ ($activeMenu == 'level') ? 'active' : '' }}">
@@ -36,11 +36,9 @@
             </li>
             <li class="nav-item">
                 <a href="{{ url('/supplier') }}" class="nav-link {{ ($activeMenu == 'supplier') ? 'active' : '' }}">
-                    <i class="nav-icon far fa-user"></i>
-                    <p>Supplier</p>
+                    <i class="nav-icon fas fa-truck"></i>
+                    <p>Data Supplier</p>
                 </a>
-            </li>
-
             <li class="nav-header">Data Barang</li>
             <li class="nav-item">
                 <a href="{{ url('/kategori') }}" class="nav-link {{ ($activeMenu == 'kategori') ? 'active' : '' }}">
@@ -54,7 +52,6 @@
                     <p>Data Barang</p>
                 </a>
             </li>
-
             <li class="nav-header">Data Transaksi</li>
             <li class="nav-item">
                 <a href="{{ url('/stok') }}" class="nav-link {{ ($activeMenu == 'stok') ? 'active' : '' }}">
@@ -63,9 +60,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/penjualan') }}" class="nav-link {{ ($activeMenu == 'penjualan') ? 'active' : '' }}">
+                <a href="{{ url('/barang') }}" class="nav-link {{ ($activeMenu == 'penjualan') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-cash-register"></i>
                     <p>Transaksi Penjualan</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('logout') }}" class="nav-link text-danger">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>Logout</p>
                 </a>
             </li>
         </ul>
