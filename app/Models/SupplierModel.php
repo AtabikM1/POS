@@ -17,4 +17,6 @@ class SupplierModel extends Model
         'supplier_nama',
         'supplier_alamat'
     ];
+    
+
 }
