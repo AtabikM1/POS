@@ -12,7 +12,7 @@
                     Export Excel</a>
                 <a href="{{ route('penjualan.export_pdf') }}" class="btn btn-danger btn-sm"><i class="fa fa-file-pdf"></i>
                     Export PDF</a> --}}
-                <button onclick="modalAction('{{ url('/penjualan/create_ajax') }}')" class="btn btn-success btn-sm"><i
+                <button onclick="modalAction('{{ url('/penjualan/create') }}')" class="btn btn-success btn-sm"><i
                         class="fa fa-plus"></i> Tambah</button>
             </div>
         </div>
@@ -27,15 +27,15 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label for="kategori_filter">Filter Kategori:</label>
                         <select id="kategori_filter" class="form-control">
                             <option value="">Semua Kategori</option>
                             @foreach(\App\Models\KategoriModel::all() as $kategori)
-                                <option value="{{ $kategori->kategori_id }}">{{ $kategori->kategori_nama }}</option>
+                            <option value="{{ $kategori->kategori_id }}">{{ $kategori->kategori_nama }}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
@@ -47,7 +47,7 @@
                         <th>Pembeli</th>
                         <th>Penjualan Kode</th>
                         <th>tanggal</th>
-
+                        <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -115,13 +115,20 @@
                     name: 'penjualan_tanggal',
 
                 },
-
+                {
+                        data: null,
+                        name: 'aksi',
+                        searchable: false,
+                        sortable: false,
+                        render: function (data, type, row) {
+                            // Add the 'Detail' button
+                            return '<button onclick="modalAction(\'{{ url("penjualan/show/' + row.penjualan_kode + '") }}\')" class="btn btn-info btn-sm"><i class="fa"></i> Detail</button>';
+                        }
+                    }
                 ]
             });
 
-            $('#kategori_filter').on('change', function () {
-                table.ajax.reload();
-            });
+
         });
     </script>
 @endpush

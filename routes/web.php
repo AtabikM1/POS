@@ -145,7 +145,8 @@ Route::middleware(['auth'])->group(function(){
             Route::post('/list', [PenjualanController::class, 'list']);
             Route::get('/create_ajax', [PenjualanController::class, 'create_ajax']);
             Route::post('/ajax', [PenjualanController::class, 'store_ajax']);
-           Route::post('/{penjualan_id}/create_detail_ajax', [PenjualanController::class, 'create_detail_ajax']);  // Menyimpan detail penjualan
+           Route::post('/{penjualan_id}/create_detail_ajax', [PenjualanController::class, 'create_detail_ajax']); 
+           Route::get('/{id}', [PenjualanController::class, 'show_ajax']);
         });
     });
 
