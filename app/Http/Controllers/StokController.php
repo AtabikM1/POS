@@ -8,6 +8,7 @@ use App\Models\SupplierModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 class StokController extends Controller
 {
@@ -51,9 +52,45 @@ class StokController extends Controller
             ->make(true);
     }
 
-    public function show_ajax($id)
-    {
-        $stok = StokModel::with(['barang', 'supplier', 'user'])->find($id);
-        return view('stok.show_ajax', ['stok' => $stok]);
+    // public function show_ajax($id)
+    // {
+    //     $stok = StokModel::with(['barang', 'supplier', 'user'])->find($id);
+    //     return view('stok.show_ajax', ['stok' => $stok]);
+    // }
+
+    public function create_ajax(){
+        $user = UserModel::all();
+        $supplier = SupplierModel::all();
+        $barang = BarangModel::all();
+        return view('stok.create_ajax', ['barang' => $barang, 'user' => $user, 'supplier' => $supplier]);
     }
+
+    public function store_ajax(Request $request){
+        if ($request->ajax() || $request->wantsJson()){
+            $rules = [
+                'supplier_id' => 'required|integer',
+                'barang_id' => 'required|integer',
+                'user_id' => 'required|integer',
+                'stok_tanggal' => 'required|date|before_or_equal:today',
+                'stok_jumlah' => 'required|integer',
+            ];
+            $validator = Validator::make($request->all(),$rules);
+            if($validator->fails()){
+                return response()->json([
+                    'status'=> false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $stok = StokModel::create($request->all());
+            return response()->json([
+                'status' =>true,
+                'message' => 'Data barang berhasil disimpan'
+            ]);
+        }
+        return redirect('/');
+    }
+
+
 }

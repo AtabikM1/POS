@@ -11,6 +11,8 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\PenjualanController;
+
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
@@ -135,6 +137,15 @@ Route::middleware(['auth'])->group(function(){
         Route::prefix('stok')->group(function () {
             Route::get('/', [StokController::class, 'index']);
             Route::post('/list', [StokController::class, 'list']);
+            Route::get('/create_ajax', [StokController::class, 'create_ajax']);
+            Route::post('/ajax', [StokController::class, 'store_ajax']);
+        });
+        Route::prefix('penjualan')->group(function () {
+            Route::get('/', [PenjualanController::class, 'index']);
+            Route::post('/list', [PenjualanController::class, 'list']);
+            Route::get('/create_ajax', [PenjualanController::class, 'create_ajax']);
+            Route::post('/ajax', [PenjualanController::class, 'store_ajax']);
+           Route::post('/{penjualan_id}/create_detail_ajax', [PenjualanController::class, 'create_detail_ajax']);  // Menyimpan detail penjualan
         });
     });
 

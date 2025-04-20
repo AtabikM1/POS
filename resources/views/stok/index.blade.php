@@ -1,5 +1,4 @@
 @extends('layouts.template')
-<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
     <div class="card">
@@ -34,11 +33,11 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="kategori_filter">Filter Kategori:</label>
-                    <select id="kategori_filter" class="form-control">
-                        <option value="">Semua Kategori</option>
-                        @foreach(\App\Models\KategoriModel::all() as $kategori)
-                            <option value="{{ $kategori->kategori_id }}">{{ $kategori->kategori_nama }}</option>
+                    <label for="barang_filter">Filter Barang:</label>
+                    <select id="barang_filter" class="form-control">
+                        <option value="">Semua barang</option>
+                        @foreach(\App\Models\BarangModel::all() as $barang)
+                            <option value="{{ $barang->barang_id }}">{{ $barang->barang_nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -53,7 +52,7 @@
                         <th>User</th>
                         <th>Tanggal Stok</th>
                         <th>Jumlah Stok</th>
-                        <th>Aksi</th>
+                        {{-- <th>Aksi</th> --}}
                     </tr>
                 </thead>
             </table>
@@ -95,7 +94,7 @@
                     type: "POST",
                     data: function (d) {
                         d._token = "{{ csrf_token() }}";
-                        d.kategori_id = $('#kategori_filter').val();
+                        d.barang_id = $('#barang_filter').val();
                     }
                 },
                 columns: [
@@ -105,14 +104,20 @@
                     { data: 'user.username', name: 'user.username' }, // atau sesuaikan dengan kolom di tabel user kamu
                     { data: 'stok_tanggal', name: 'stok_tanggal' },
                     { data: 'stok_jumlah', name: 'stok_jumlah', searchable: false },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                    // { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
 
             });
 
-            // $('#kategori_filter').on('change', function () {
-            //     table.ajax.reload();
-            // });
+            $('#barang_filter').on('change', function () {
+                table.ajax.reload();
+            });
         });
     </script>
+    <style>
+        .content-wrapper {
+            min-height: 100vh !important;
+        }
+    </style>
+
 @endpush
