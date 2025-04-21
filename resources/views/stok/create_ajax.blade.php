@@ -1,121 +1,135 @@
-<div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLabel">Tambah Stok</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<div class="modal-body">
-    <form id="form-stok">
-        @csrf
-
-        <div class="form-group">
-            <label for="supplier_id">Supplier</label>
-            <select class="form-control" id="supplier_id" name="supplier_id">
-                <option value="">- Pilih supplier -</option>
-                @foreach($supplier as $k)
-                    <option value="{{ $k->supplier_id }}">{{ $k->supplier_nama }}</option>
-                @endforeach
-            </select>
-            <small class="text-danger" id="error-supplier_id"></small>
+<form action="{{ url('/stok/store_ajax') }}" method="POST" id="form-tambah">
+    @csrf
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Data Stok</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Pilih Supplier -->
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <select name="supplier_id" id="supplier_id" class="form-control" required>
+                        <option value="">- Pilih Supplier -</option>
+                        @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->supplier_id }}">{{ $supplier->supplier_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-supplier_id" class="error-text form-text text-danger"></small>
+                </div>
+                <!-- Pilih User -->
+                <div class="form-group">
+                    <label>User</label>
+                    <select name="user_id" id="user_id" class="form-control" required>
+                        <option value="">- Pilih User -</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->user_id }}">{{ $user->nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-user_id" class="error-text form-text text-danger"></small>
+                </div>
+                <!-- Pilih Barang -->
+                <div class="form-group">
+                    <label>Barang</label>
+                    <select name="barang_id" id="barang_id" class="form-control" required>
+                        <option value="">- Pilih Barang -</option>
+                        @foreach($barangs as $barang)
+                            <option value="{{ $barang->barang_id }}">{{ $barang->barang_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-barang_id" class="error-text form-text text-danger"></small>
+                </div>
+                <!-- Input Tanggal Stok -->
+                <div class="form-group">
+                    <label>Tanggal Stok</label>
+                    <input type="date" name="stok_tanggal" id="stok_tanggal" class="form-control" required>
+                    <small id="error-stok_tanggal" class="error-text form-text text-danger"></small>
+                </div>
+                <!-- Input Jumlah Stok -->
+                <div class="form-group">
+                    <label>Jumlah Stok</label>
+                    <input type="number" name="stok_jumlah" id="stok_jumlah" class="form-control" required>
+                    <small id="error-stok_jumlah" class="error-text form-text text-danger"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="barang_id">Barang</label>
-            <select class="form-control" id="barang_id" name="barang_id">
-                <option value="">- Pilih barang -</option>
-                @foreach($barang as $k)
-                    <option value="{{ $k->barang_id }}">{{ $k->barang_nama }}</option>
-                @endforeach
-            </select>
-            <small class="text-danger" id="error-barang_id"></small>
-        </div>
-
-        <div class="form-group">
-            <label for="user_id">User</label>
-            <select class="form-control" id="user_id" name="user_id">
-                <option value="">- Pilih user -</option>
-                @foreach($user as $k)
-                    <option value="{{ $k->user_id }}">{{ $k->username }}</option>
-                    {{ json_encode($k) }} {{-- debug --}}
-                @endforeach
-            </select>
-            <small class="text-danger" id="error-user_id"></small>
-        </div>
-
-        <div class="form-group">
-            <label for="stok_tanggal">Tanggal Stok</label>
-            <input type="date" class="form-control" id="stok_tanggal" name="stok_tanggal" placeholder="Pilih Tanggal">
-            <small class="text-danger" id="error-stok_tanggal"></small>
-        </div>
-
-        <div class="form-group">
-            <label for="stok_jumlah">Jumlah Stok</label>
-            <input type="number" class="form-control" id="stok_jumlah" name="stok_jumlah" placeholder="Masukkan Jumlah">
-            <small class="text-danger" id="error-stok_jumlah"></small>
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-            <button id="btn-submit-stok" type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-    </form>
-</div>
+    </div>
+</form>
 
 <script>
     $(document).ready(function () {
-        $('#form-stok').on('submit', function (e) {
-            e.preventDefault();
-
-            $.ajax({
-                url: "{{ url('stok/ajax') }}",
-                method: "POST",
-                data: $('#form-stok').serialize(),
-                dataType: 'json',
-                success: function (response) {
-                    if (response.status) {
-                        Swal.fire({
-                            title: 'Sukses!',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
+        // Validasi form dengan jQuery Validate
+        $("#form-tambah").validate({
+            rules: {
+                supplier_id: { required: true, number: true },
+                user_id: { required: true, number: true },
+                barang_id: { required: true, number: true },
+                stok_tanggal: { required: true, date: true },
+                stok_jumlah: { required: true, number: true }
+            },
+            submitHandler: function (form) {
+                // Mengirim data via AJAX
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: $(form).serialize(),
+                    success: function (response) {
+                        if (response.status) {
+                            // Jika sukses, tutup modal dan tampilkan notifikasi
                             $('#myModal').modal('hide');
-                            $('#tbl-stok').DataTable().ajax.reload();
-                        });
-                    } else {
-                        if (response.msgField) {
-                            resetErrorField();
-                            $.each(response.msgField, function (index, value) {
-                                $('#error-' + index).text(value);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            });
+                            // Reload DataTable stok jika variabel global dataStok ada
+                            if (window.dataStok) {
+                                window.dataStok.ajax.reload();
+                            } else {
+                                location.reload();
+                            }
+                        } else {
+                            // Bersihkan error teks dan tampilkan pesan validasi
+                            $('.error-text').text('');
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
+                            });
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi Kesalahan',
+                                text: response.message
                             });
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
                         Swal.fire({
-                            title: 'Gagal!',
-                            text: response.message,
                             icon: 'error',
-                            confirmButtonText: 'OK'
+                            title: 'Error',
+                            text: 'Gagal menyimpan data stok.'
                         });
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Terjadi kesalahan saat menyimpan data',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
+                });
+                return false;
+            },
+            errorElement: 'span',
+            errorPlacement: function (error, element) {
+                error.addClass('invalid-feedback');
+                element.closest('.form-group').append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass('is-invalid');
+            }
         });
-
-        function resetErrorField() {
-            $('#error-kategori_id').text('');
-            $('#error-stok_kode').text('');
-            $('#error-stok_nama').text('');
-            $('#error-harga_beli').text('');
-            $('#error-harga_jual').text('');
-        }
     });
 </script>

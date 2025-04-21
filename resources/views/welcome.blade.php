@@ -1,72 +1,107 @@
 @extends('layouts.template')
 
 @section('content')
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-primary card-outline shadow-lg"
-                    style="border-top: 3px solid #007bff; background: linear-gradient(to right, #f8f9fa, #ffffff);">
-                    <div class="card-body box-profile py-3">
-                        <div class="row">
-                            <div class="col-md-3 text-center d-flex align-items-center justify-content-center">
-                                @if(auth()->check() && auth()->user()->profile_photo)
-                                    <img class="profile-user-img img-fluid img-circle shadow"
-                                        src="{{ asset(auth()->user()->profile_photo) }}" alt="User profile picture"
-                                        style="width: 150px; height: 150px; border: 3px solid #fff; object-fit: cover;">
-                                @else
-                                    <img class="profile-user-img img-fluid img-circle shadow"
-                                        src="{{ asset('adminlte/dist/img/default-user.png') }}" alt="User profile picture"
-                                        style="width: 150px; height: 150px; border: 3px solid #fff;">
-                                @endif
-                            </div>
-
-                            <div class="col-md-9">
-                                <h3 class="profile-username mb-1">Admin POS</h3>
-                                <p class="text-muted mb-3"><i class="fas fa-user-shield mr-1"></i> Administrator Sistem</p>
-
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <strong><i class="fas fa-user text-primary mr-1"></i> Username</strong>
-                                        <p class="text-muted mb-0">
-                                            {{ auth()->check() ? auth()->user()->username : 'Tidak tersedia' }}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <strong><i class="fas fa-calendar text-primary mr-1"></i> Bergabung</strong>
-                                        <p class="text-muted mb-0">{{ date('d F Y') }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-3">
-                                    <button onclick="editProfilePhoto()" class="btn btn-primary btn-sm px-4 shadow-sm">
-                                        <i class="fas fa-user-edit mr-1"></i> Edit Profil
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="row pl-3 pr-3">
+        <!-- Card 1 - Total Pengguna -->
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $totalPengguna }}</h3>
+                    <p>Total Pengguna</p>
                 </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <a href="{{ url('/user') }}" class="small-box-footer">
+                    Selengkapnya <i class="fas fa-arrow-circle-right"></i>
+                </a>
             </div>
         </div>
+
+        <!-- Card 2 - Total Barang -->
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $totalBarang }}</h3>
+                    <p>Total Barang</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <a href="{{ url('/barang') }}" class="small-box-footer">
+                    Selengkapnya <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 3 - Total Stok -->
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ $totalStok }}</h3>
+                    <p>Total Stok</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <a href="{{ url('/stok') }}" class="small-box-footer">
+                    Selengkapnya <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 4 - Total Penjualan -->
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ $totalPenjualan }}</h3>
+                    <p>Total Penjualan</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-cash-register"></i>
+                </div>
+                <a href="{{ url('/penjualan') }}" class="small-box-footer">
+                    Selengkapnya <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="modalAction" tabindex="-1" role="dialog" aria-labelledby="modalActionTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" id="modalActionContent">
-                <!-- Content will be loaded dynamically -->
-            </div>
-        </div>
-    </div>
+    <!-- Card for the additional diagram -->
 
 @endsection
 
-@push('js')
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        function editProfilePhoto() {
-            window.location.href = '{{ route("profile.photo.edit") }}';
-        }
+        var ctx = document.getElementById('userChart').getContext('2d');
+        var userChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
+                datasets: [{
+                    label: 'Pengguna Aktif',
+                    data: [1200, 1300, 1250, 1400, 1350, 1450],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Pengguna Tidak Aktif',
+                    data: [300, 350, 400, 450, 500, 550],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
 @endpush

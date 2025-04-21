@@ -1,52 +1,59 @@
 @extends('layouts.template')
 
 @section('content')
-    <div class="card">
+    <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Data Penjualan</h3>
+            <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                {{-- <button onclick="modalAction('{{ url('/penjualan/import') }}')" class="btn btn-info btn-sm"><i
-                        class="fa fa-upload"></i> Import</button>
-                <a href="{{ route('penjualan.export_excel') }}" class="btn btn-primary btn-sm"><i
-                        class="fa fa-file-excel"></i>
-                    Export Excel</a>
-                <a href="{{ route('penjualan.export_pdf') }}" class="btn btn-danger btn-sm"><i class="fa fa-file-pdf"></i>
-                    Export PDF</a> --}}
-                <button onclick="modalAction('{{ url('/penjualan/create') }}')" class="btn btn-success btn-sm"><i
-                        class="fa fa-plus"></i> Tambah</button>
+                <!-- Tombol untuk membuka form create stok via AJAX -->
+                <button onclick="modalAction('{{ url('stok/create_ajax') }}')" class="btn btn-sm btn-success mt-1">
+                    Tambah Data Stok
+                </button>
+                <button onclick="modalAction('{{ url('stok/import') }}')" class="btn btn-sm btn-info mt-1">
+                    <i class="fa fa-file-excel mr-1"></i>Import Data Stok
+                </button>
+                <a href="{{ url('/stok/export_excel') }}" class="btn btn-sm btn-primary mt-1">
+                    <i class="fa fa-file-excel mr-1"></i>Export Excel
+                </a>
+                <a href="{{ url('/stok/export_pdf') }}" class="btn btn-sm btn-warning mt-1">
+                    <i class="fa fa-file-pdf mr-1"></i> Export PDF
+                </a>
             </div>
         </div>
         <div class="card-body">
-            @if(session('success'))
+            <!-- Pesan Sukses dan Error -->
+            @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-
-            @if(session('error'))
+            @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    {{-- <div class="form-group">
-                        <label for="kategori_filter">Filter Kategori:</label>
-                        <select id="kategori_filter" class="form-control">
-                            <option value="">Semua Kategori</option>
-                            @foreach(\App\Models\KategoriModel::all() as $kategori)
-                            <option value="{{ $kategori->kategori_id }}">{{ $kategori->kategori_nama }}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
+            <!-- Filter -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-1 control-label col-form-label">Filter</label>
+                        <div class="col-3">
+                            <select class="form-control" id="barang_id" name="barang_id" required>
+                                <option value="">Semua</option>
+                                @foreach($barang as $item)
+                                    <option value="{{ $item->barang_id }}">{{ $item->barang_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Stok Barang</small>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <table class="table table-bordered table-striped" id="tbl-penjualan">
+            <!-- Tabel Data Stok -->
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_stok">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>User</th>
-                        <th>Pembeli</th>
-                        <th>Penjualan Kode</th>
-                        <th>tanggal</th>
+                        <th>ID</th>
+                        {{-- <th>ID Barang</th> --}}
+                        <th>Nama Barang</th>
+                        <th>Jumlah Stok</th>
+                        <th>Tanggal Stok</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -54,81 +61,51 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" id="modal-content">
-                <!-- Content will be loaded here -->
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
             </div>
         </div>
     </div>
 @endsection
 
+@push('css')
+@endpush
+
 @push('js')
     <script>
-        function modalAction(url) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (data) {
-                    $('#modal-content').html(data);
-                    $('#myModal').modal('show');
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                }
+        // Fungsi untuk memuat konten modal via AJAX
+        function modalAction(url = '') {
+            $('#myModal').load(url, function () {
+                $('#myModal').modal('show');
             });
         }
 
+        var dataStok;
         $(document).ready(function () {
-            var table = $('#tbl-penjualan').DataTable({
+            dataStok = $('#table_stok').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
-                    url: "{{ url('penjualan/list') }}",
+                    url: "{{ url('/stok/list') }}",
                     type: "POST",
                     data: function (d) {
-                        d._token = "{{ csrf_token() }}";
-                        d.kategori_id = $('#kategori_filter').val();
+                        d.barang_id = $('#barang_id').val();
                     }
                 },
-                columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    searchable: false,
-                    sortable: false
-                },
-                {
-                    data: 'user.user_id',
-                    name: 'user.user_id'
-                },
-                {
-                    data: 'pembeli',
-                    name: 'pembeli'
-                },
-                {
-                    data: 'penjualan_kode',
-                    name: 'penjualan_kode'
-                },
-                {
-                    data: 'penjualan_tanggal',
-                    name: 'penjualan_tanggal',
-
-                },
-                {
-                        data: null,
-                        name: 'aksi',
-                        searchable: false,
-                        sortable: false,
-                        render: function (data, type, row) {
-                            // Add the 'Detail' button
-                            return '<button onclick="modalAction(\'{{ url("penjualan/show/' + row.penjualan_kode + '") }}\')" class="btn btn-info btn-sm"><i class="fa"></i> Detail</button>';
-                        }
-                    }
+                columns: [
+                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    // {data: "barang_id", orderable: true, searchable: true},
+                    { data: "barang_nama", orderable: true, searchable: true },
+                    { data: "stok_jumlah", orderable: true, searchable: false },
+                    { data: "stok_tanggal", orderable: true, searchable: false },
+                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ]
             });
 
-
+            $('#barang_id').on('change', function () {
+                dataStok.ajax.reload();
+            });
         });
     </script>
 @endpush
